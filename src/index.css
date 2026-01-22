@@ -1,0 +1,210 @@
+/* stylelint-disable at-rule-no-unknown */
+@config "../tailwind.config.js";
+@import "tailwindcss";
+/* stylelint-enable at-rule-no-unknown */
+
+/* ===== Medical Green Theme Tokens ===== */
+:root {
+  /* Base */
+  --background: 248 250 249;
+  --foreground: 27 49 38;
+
+  --card: 255 255 255;
+  --card-foreground: 27 49 38;
+
+  --popover: 255 255 255;
+  --popover-foreground: 27 49 38;
+
+  /* Brand */
+  --primary: 63 167 131;
+  --primary-foreground: 255 255 255;
+
+  --secondary: 227 238 232;
+  --secondary-foreground: 45 83 64;
+
+  --muted: 235 241 238;
+  --muted-foreground: 98 128 113;
+
+  --input-placeholder: 173 194 184;
+
+  --accent: 208 236 229;
+  --accent-foreground: 36 77 59;
+
+  /* Status */
+  --success: 33 150 93;
+  --warning: 255 165 13;
+  --info: 14 149 230;
+
+  --destructive: 239 68 68;
+  --destructive-foreground: 255 255 255;
+
+  /* UI */
+  --border: 221 234 226;
+  --input: 221 234 226;
+  --ring: 63 167 131;
+
+  --radius: 0.75rem;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(
+    135deg,
+    rgb(63 167 131),
+    rgb(51 153 123)
+  );
+
+  --gradient-hero: linear-gradient(
+    180deg,
+    rgb(242 247 244) 0%,
+    rgb(227 238 232) 100%
+  );
+
+  --gradient-card: linear-gradient(
+    145deg,
+    rgb(255 255 255) 0%,
+    rgb(248 250 249) 100%
+  );
+
+  /* Shadows */
+  --shadow-soft: 0 4px 20px -4px rgb(54 92 73 / 0.1);
+  --shadow-card: 0 2px 12px -2px rgb(54 92 73 / 0.08);
+  --shadow-elevated: 0 8px 30px -8px rgb(54 92 73 / 0.15);
+}
+
+/* body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: "Urbanist", sans-serif;
+} */
+
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground antialiased;
+        font-family: "Urbanist", sans-serif;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: "Source Serif 4", serif;
+    }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium
+           transition-all duration-200 hover:opacity-90 hover:shadow-lg
+           focus:outline-none focus:ring-2 focus:ring-primary/50;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground px-6 py-3 rounded-lg font-medium
+           transition-all duration-200 hover:bg-secondary/80
+           focus:outline-none focus:ring-2 focus:ring-primary/30;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary px-6 py-3 rounded-lg font-medium
+           transition-all duration-200 hover:bg-primary hover:text-primary-foreground
+           focus:outline-none focus:ring-2 focus:ring-primary/50;
+  }
+
+  .card-medical {
+    @apply bg-card rounded-xl p-6 shadow-[var(--shadow-card)]
+           border border-border/50 transition-all duration-200
+           hover:shadow-[var(--shadow-soft)];
+  }
+
+  .input-medical {
+    @apply w-full px-4 py-3 rounded-lg border border-input bg-background
+           text-foreground placeholder:text-muted-foreground
+           focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary
+           transition-all duration-200;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs uppercase font-semibold;
+  }
+
+  .status-submitted {
+    @apply bg-info/15 text-info;
+
+    /*@apply bg-info/15 text-info;
+    @apply bg-yellow-100 text-yellow-600;*/
+  }
+
+  .status-review {
+    @apply bg-warning/15 text-warning;
+  }
+
+  .status-suggested {
+    @apply bg-accent text-accent-foreground;
+  }
+
+  .status-approved {
+    @apply bg-success/15 text-success;
+  }
+
+  .step-indicator {
+    @apply w-12 h-12 rounded-full flex items-center justify-center
+           text-lg font-semibold transition-all duration-300;
+  }
+
+  .step-active {
+    @apply bg-primary text-primary-foreground shadow-lg;
+  }
+
+  .step-inactive {
+    @apply bg-secondary text-secondary-foreground;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from { 
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to { 
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
