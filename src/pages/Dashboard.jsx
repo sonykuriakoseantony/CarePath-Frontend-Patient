@@ -1,63 +1,76 @@
-import React, { useState } from 'react';
-import { FaCheckCircle, FaThumbsUp } from 'react-icons/fa';
-import { FiClock, FiFileText, FiSearch, FiSend, FiUserCheck } from 'react-icons/fi';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { toast } from 'react-toastify';
-import { LuClipboardList } from 'react-icons/lu';
-import { BiUpload } from 'react-icons/bi';
-import { GrClose } from 'react-icons/gr';
-import { IoAlertCircleOutline } from 'react-icons/io5';
-
+import React, { useState } from "react";
+import { FaCheckCircle, FaThumbsUp } from "react-icons/fa";
+import {
+  FiClock,
+  FiFileText,
+  FiSearch,
+  FiSend,
+  FiUserCheck,
+} from "react-icons/fi";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import { LuClipboardList } from "react-icons/lu";
+import { BiUpload } from "react-icons/bi";
+import { GrClose } from "react-icons/gr";
+import { IoAlertCircleOutline } from "react-icons/io5";
 
 const statusConfig = {
-  SUBMITTED: {
-    label: 'Submitted',
-    class: 'status-submitted',
+  submitted: {
+    label: "Submitted",
+    class: "status-submitted",
     icon: FaCheckCircle,
-    description: 'Your case has been received and is waiting for review.'
+    description: "Your case has been received and is waiting for review.",
   },
-  UNDER_REVIEW: {
-    label: 'Under Review',
-    class: 'status-review',
+  under_review: {
+    label: "Under Review",
+    class: "status-review",
     icon: FiSearch,
-    description: 'A medical professional is reviewing your symptoms.'
+    description: "A medical professional is reviewing your symptoms.",
   },
-  SPECIALIST_SUGGESTED: {
-    label: 'Specialist Suggested',
-    class: 'status-suggested',
+  specialist_suggested: {
+    label: "Specialist Suggested",
+    class: "status-suggested",
     icon: FiUserCheck,
-    description: 'A specialist has been recommended for your case.'
+    description: "A specialist has been recommended for your case.",
   },
-  APPROVED: {
-    label: 'Approved',
-    class: 'status-approved',
+  approved: {
+    label: "Approved",
+    class: "status-approved",
     icon: FaThumbsUp,
-    description: 'Your appointment has been approved. You can now book.'
+    description:
+      "Your appointment has been approved. You can now book appointment with the doctor.",
   },
 };
 
 const severityOptions = [
-  { value: 'mild', label: 'Mild - Manageable discomfort' },
-  { value: 'moderate', label: 'Moderate - Affecting daily activities' },
-  { value: 'severe', label: 'Severe - Significant impact on quality of life' },
+  { value: "mild", label: "Mild - Manageable discomfort" },
+  { value: "moderate", label: "Moderate - Affecting daily activities" },
+  { value: "severe", label: "Severe - Significant impact on quality of life" },
 ];
 
 function Dashboard() {
-  const {user, isLoading, submitSymptoms, getUserCases, isAuthenticated } = useAuth();
+  const { user, isLoading, submitSymptoms, isAuthenticated, cases } =
+    useAuth();
 
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fileName, setFileName] = useState('');
-  
+  const [fileName, setFileName] = useState("");
+
   const [formData, setFormData] = useState({
-    primarySymptoms: '',
-    duration: '',
-    severity: '',
-    additionalNotes: '',
+    patientName : "",
+    patientEmail : "",
+    symptoms: "",
+    duration: "",
+    severity: "",
+    patientNotes: " ",
+    medicalReports: [],
   });
 
-  const cases = getUserCases();
+  console.log(user);
+  console.log(cases);
+
+  // const cases = getUserCases();
 
   if (isLoading) {
     return (
@@ -72,14 +85,21 @@ function Dashboard() {
   }
 
   const handleChange = (e) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     }));
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      medicalReports: [...prev.medicalReports, file],
+    }));
+
     if (file) {
       setFileName(file.name);
     }
@@ -87,52 +107,62 @@ function Dashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.primarySymptoms.trim()) {
-      toast.error('Please describe your symptoms');
+
+    if (!formData.symptoms.trim()) {
+      toast.error("Please describe your symptoms");
       return;
     }
     if (!formData.duration.trim()) {
-      toast.error('Please specify the duration');
+      toast.error("Please specify the duration");
       return;
     }
     if (!formData.severity) {
-      toast.error('Please select severity level');
+      toast.error("Please select severity level");
       return;
     }
 
     setIsSubmitting(true);
 
+    console.log(user);
+    
     try {
-      await submitSymptoms({
+      const dataBody = {
         ...formData,
-        hasReport: !!fileName,
-        reportName: fileName
-      });
+        patientName : user.name,
+        patientEmail : user.email,
+        patientId : user._id
+      }
+      console.log("++++++++++++++++++++++++++");
+      console.log(dataBody);
       
-      toast.success('Symptoms submitted successfully! Your case ID has been assigned.');
+      await submitSymptoms(dataBody);
+
+      toast.success(
+        "Symptoms submitted successfully! Your case ID has been assigned.",
+      );
       setShowForm(false);
       setFormData({
-        primarySymptoms: '',
-        duration: '',
-        severity: '',
-        additionalNotes: '',
+        symptoms: "",
+        duration: "",
+        severity: "",
+        patientNotes: " ",
+        medicalReports: [],
       });
-      setFileName('');
+      setFileName("");
     } catch (error) {
-      toast.error('Failed to submit symptoms');
+      toast.error("Failed to submit symptoms");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
   return (
@@ -161,7 +191,8 @@ function Dashboard() {
                   Submit Symptoms
                 </p>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Describe your symptoms to get matched with the right specialist.
+                  Describe your symptoms to get matched with the right
+                  specialist.
                 </p>
                 <button
                   onClick={() => setShowForm(true)}
@@ -174,7 +205,10 @@ function Dashboard() {
           </div>
 
           {/* Status Overview Card */}
-          <div className="card-medical animate-slide-up" style={{ animationDelay: '100ms' }}>
+          <div
+            className="card-medical animate-slide-up"
+            style={{ animationDelay: "100ms" }}
+          >
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center shrink-0">
                 <FiClock className="w-6 h-6 text-primary" />
@@ -184,12 +218,14 @@ function Dashboard() {
                   Active Cases
                 </p>
                 <p className="text-sm text-muted-foreground mb-2">
-                  You have {cases.length} case{cases.length !== 1 ? 's' : ''} on record.
+                  You have {cases?.length} case{cases?.length != 1 ? "s" : ""} on
+                  record.
                 </p>
                 <div className="flex gap-2 flex-wrap">
-                  {cases.length > 0 && (
+                  {cases?.length > 0 && (
                     <span className="status-badge status-submitted text-xs">
-                      {cases.filter(c => c.status === 'SUBMITTED').length} Pending
+                      {cases?.filter((c) => c.status == "submitted").length}{" "}
+                      Pending
                     </span>
                   )}
                 </div>
@@ -199,7 +235,7 @@ function Dashboard() {
         </div>
 
         {/* Cases List */}
-        <div className="animate-slide-up" style={{ animationDelay: '200ms' }}>
+        <div className="animate-slide-up" style={{ animationDelay: "200ms" }}>
           <p className="text-xl font-semibold text-foreground mb-4">
             Your Cases
           </p>
@@ -222,17 +258,18 @@ function Dashboard() {
             </div>
           ) : (
             <div className="space-y-4">
-              {cases.map((caseItem) => {
-                const status = statusConfig[caseItem.status] || statusConfig.SUBMITTED;
+              {cases?.map((caseItem) => {
+                const status =
+                  statusConfig[caseItem.status] || statusConfig.SUBMITTED;
                 const StatusIcon = status.icon;
 
                 return (
-                  <div key={caseItem.id} className="card-medical">
+                  <div key={caseItem._id} className="card-medical">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <span className="tracking-wider text-sm text-primary font-semibold">
-                            {caseItem.id}
+                            {caseItem._id}
                           </span>
                           <span className={`status-badge ${status.class}`}>
                             <StatusIcon className="w-3 h-3 mr-1" />
@@ -247,16 +284,24 @@ function Dashboard() {
 
                     <div className="grid sm:grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="text-muted-foreground">Primary Symptoms:</span>
-                        <p className="text-foreground mt-1">{caseItem.primarySymptoms}</p>
+                        <span className="text-muted-foreground">
+                          Primary Symptoms:
+                        </span>
+                        <p className="text-foreground mt-1">
+                          {caseItem.symptoms}
+                        </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Duration:</span>
-                        <p className="text-foreground mt-1">{caseItem.duration}</p>
+                        <p className="text-foreground mt-1">
+                          {caseItem.duration}
+                        </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Severity:</span>
-                        <p className="text-foreground mt-1 capitalize">{caseItem.severity}</p>
+                        <p className="text-foreground mt-1 capitalize">
+                          {caseItem.severity}
+                        </p>
                       </div>
                     </div>
 
@@ -300,8 +345,8 @@ function Dashboard() {
                   Primary Symptoms *
                 </label>
                 <textarea
-                  name="primarySymptoms"
-                  value={formData.primarySymptoms}
+                  name="symptoms"
+                  value={formData.symptoms}
                   onChange={handleChange}
                   placeholder="Describe your main symptoms in detail..."
                   rows={3}
@@ -339,7 +384,7 @@ function Dashboard() {
                   required
                 >
                   <option value="">Select severity level</option>
-                  {severityOptions.map(opt => (
+                  {severityOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
                     </option>
@@ -354,7 +399,7 @@ function Dashboard() {
                 </label>
                 <textarea
                   name="additionalNotes"
-                  value={formData.additionalNotes}
+                  value={formData.patientNotes}
                   onChange={handleChange}
                   placeholder="Any additional information, medical history, or concerns..."
                   rows={2}
@@ -370,7 +415,7 @@ function Dashboard() {
                 <label className="flex items-center gap-3 p-4 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
                   <BiUpload className="w-5 h-5 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    {fileName || 'Click to upload a file'}
+                    {fileName || "Click to upload a file"}
                   </span>
                   <input
                     type="file"
@@ -410,7 +455,7 @@ function Dashboard() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

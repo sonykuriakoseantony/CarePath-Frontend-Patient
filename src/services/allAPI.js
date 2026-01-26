@@ -12,13 +12,24 @@ export const loginAPI = async (reqBody) => {
     return await commonAPI("POST", `${serverURL}/login`, reqBody);
 }
 
-// edit user API
-export const editUserAPI = async (id, reqBody, reqHeader) => {
-    return await commonAPI("PUT", `${serverURL}/user/${id}/edit`, reqBody, reqHeader);
+// // edit user API
+// export const editUserAPI = async (id, reqBody, reqHeader) => {
+//     return await commonAPI("PUT", `${serverURL}/user/${id}/edit`, reqBody, reqHeader);
+// }
+
+// // get all users by admin
+// export const getAllUsersAPI = async (reqHeader) => {
+//     return await commonAPI("GET", `${serverURL}/users/all`, {}, reqHeader);
+// }
+
+
+// get all cases by patients by id
+export const getAllCasesAPI = async (reqHeader) => {
+    return await commonAPI("GET", `${serverURL}/cases/all`, {}, reqHeader);
 }
 
-// get all users by admin
-export const getAllUsersAPI = async (reqHeader) => {
-    return await commonAPI("GET", `${serverURL}/users/all`, {}, reqHeader);
+// create symptoms by patient users
+export const createSymptomsAPI = async (reqBody, reqHeader) => {
+    return await commonAPI("POST", `${serverURL}/symptom/add`, reqBody, reqHeader);
 }
 
