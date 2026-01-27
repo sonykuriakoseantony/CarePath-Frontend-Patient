@@ -39,6 +39,7 @@ export default {
         success: "rgb(var(--success) / <alpha-value>)",
         warning: "rgb(var(--warning) / <alpha-value>)",
         info: "rgb(var(--info) / <alpha-value>)",
+        rejected: "rgb(var(--rejected) / <alpha-value>)",
 
         destructive: {
           DEFAULT: "rgb(var(--destructive) / <alpha-value>)",

@@ -38,15 +38,17 @@ export function AuthProvider({ children }) {
     // if (storedCases) {
     //   setCases(JSON.parse(storedCases));
     // }
-
+    if (!user?._id) return;
     getUserCases();
 
     setIsLoading(false);
-  }, []);
+  }, [user?._id]);
 
   const logout = () => {
     setUser(null);
+    setCases([]);
     sessionStorage.removeItem("user");
+    sessionStorage.clear();
   };
 
   const submitSymptoms = async (symptomData) => {

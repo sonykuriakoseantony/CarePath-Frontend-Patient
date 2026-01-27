@@ -22,13 +22,13 @@ const statusConfig = {
     icon: FaCheckCircle,
     description: "Your case has been received and is waiting for review.",
   },
-  under_review: {
-    label: "Under Review",
-    class: "status-review",
+  rejected: {
+    label: "Rejected",
+    class: "status-rejected",
     icon: FiSearch,
-    description: "A medical professional is reviewing your symptoms.",
+    description: "Your case has been rejected",
   },
-  specialist_suggested: {
+  auto_suggested: {
     label: "Specialist Suggested",
     class: "status-suggested",
     icon: FiUserCheck,
@@ -260,7 +260,7 @@ function Dashboard() {
             <div className="space-y-4">
               {cases?.map((caseItem) => {
                 const status =
-                  statusConfig[caseItem.status] || statusConfig.SUBMITTED;
+                  statusConfig[caseItem.status] || statusConfig.submitted;
                 const StatusIcon = status.icon;
 
                 return (
@@ -277,7 +277,7 @@ function Dashboard() {
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          Submitted: {formatDate(caseItem.submittedAt)}
+                          Submitted: {formatDate(caseItem.createdAt)}
                         </p>
                       </div>
                     </div>
