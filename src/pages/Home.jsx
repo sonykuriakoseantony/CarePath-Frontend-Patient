@@ -83,7 +83,7 @@ function Home() {
                 </Link>
               ) : (
                 <>
-                  <Link to="/login?mode=signup" className="btn-primary inline-flex items-center gap-2">
+                  <Link to="/register" className="btn-primary inline-flex items-center gap-2">
                     Get Started Free
                     <HiArrowRight className="w-4 h-4" />
                   </Link>

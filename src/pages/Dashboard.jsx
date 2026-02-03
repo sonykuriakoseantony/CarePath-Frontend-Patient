@@ -67,8 +67,8 @@ function Dashboard() {
     medicalReports: [],
   });
 
-  console.log(user);
-  console.log(cases);
+  console.log(formData);
+  // console.log(cases);
 
   // const cases = getUserCases();
 
@@ -126,16 +126,26 @@ function Dashboard() {
     console.log(user);
     
     try {
-      const dataBody = {
-        ...formData,
-        patientName : user.name,
-        patientEmail : user.email,
-        patientId : user._id
-      }
-      console.log("++++++++++++++++++++++++++");
-      console.log(dataBody);
-      
-      await submitSymptoms(dataBody);
+      const formDataObj = new FormData();
+
+      formDataObj.append("patientName", user.name);
+      formDataObj.append("patientEmail", user.email);
+      formDataObj.append("patientId", user._id);
+      formDataObj.append("symptoms", formData.symptoms);
+      formDataObj.append("duration", formData.duration);
+      formDataObj.append("severity", formData.severity);
+      formDataObj.append("patientNotes", formData.patientNotes);
+
+      // IMPORTANT: append files correctly
+      formData.medicalReports.forEach((file) => {
+        console.log(file);
+        
+        formDataObj.append("medicalReports", file);
+      });
+
+      await submitSymptoms(formDataObj);
+      console.log("+++++++++++++FormData+++++++++++++");
+      console.log(formDataObj);
 
       toast.success(
         "Symptoms submitted successfully! Your case ID has been assigned.",
@@ -398,7 +408,7 @@ function Dashboard() {
                   Additional Notes (Optional)
                 </label>
                 <textarea
-                  name="additionalNotes"
+                  name="patientNotes"
                   value={formData.patientNotes}
                   onChange={handleChange}
                   placeholder="Any additional information, medical history, or concerns..."

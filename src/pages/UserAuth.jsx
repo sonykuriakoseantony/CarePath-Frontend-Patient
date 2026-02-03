@@ -146,9 +146,10 @@ function UserAuth({ registerURL }) {
         const result = await loginAPI(userDetails);
         console.log(result);
 
-        //results in 200, 404, 500
+        //results in 200, 401, 404, 500
 
         if (result.status == 200) {
+           console.log("Logged in successfully !", result);
           toast.success("Logged in successfully !");
           sessionStorage.setItem("token", result.data.token);
           sessionStorage.setItem("user", JSON.stringify(result.data.user));
@@ -162,16 +163,19 @@ function UserAuth({ registerURL }) {
           // Update AuthContext user so protected routes see the change immediately
           setUser && setUser(result.data.user);
 
-          navigate('/dashboard', {replace : true});
+          setTimeout(() => {
+    navigate("/dashboard", { replace: true });
+  }, 2500);
 
         }
         else if (result.status == 401 || result.status == 404) {
-          toast.warning(res.response.data.message);
+          console.log("Icorrect creds ", result);
+          toast.warning(result.response.data);
           setUserDetails({
             email: '',
             passwordHash: ''
           })
-          navigate('/');
+          // navigate('/');
         }
         else {
           toast.error("Something went wrong. Please try again later !");
@@ -202,6 +206,10 @@ function UserAuth({ registerURL }) {
             <BsArrowLeft className="w-4 h-4" />
             Back to Home
           </Link>
+
+          <button onClick={() => toast.success("TEST TOAST")}>
+      Test Toast
+    </button>
   
           {/* Card */}
           <div className="card-medical animate-scale-in">

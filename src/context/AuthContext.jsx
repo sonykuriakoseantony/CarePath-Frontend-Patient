@@ -24,6 +24,7 @@ export function AuthProvider({ children }) {
     const token = sessionStorage.getItem("token");
     const storedUser = sessionStorage.getItem("user");
     if (token && storedUser) {
+      console.log("Logging in first time!");
       const parsed = JSON.parse(storedUser);
       setUser(parsed);
       setRole(parsed.role || "");
@@ -34,13 +35,8 @@ export function AuthProvider({ children }) {
       setAuthorisedUser(false);
     }
 
-    // const storedCases = sessionStorage.getItem("patient_cases");
-    // if (storedCases) {
-    //   setCases(JSON.parse(storedCases));
-    // }
     if (!user?._id) return;
     getUserCases();
-
     setIsLoading(false);
   }, [user?._id]);
 
@@ -52,22 +48,6 @@ export function AuthProvider({ children }) {
   };
 
   const submitSymptoms = async (symptomData) => {
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     const newCase = {
-    //       id: `CASE-${Date.now()}`,
-    //       ...symptomData,
-    //       status: 'SUBMITTED',
-    //       submittedAt: new Date().toISOString(),
-    //       userId: user.id
-    //     };
-
-    //     const updatedCases = [...cases, newCase];
-    //     setCases(updatedCases);
-    //     localStorage.setItem('medcare_cases', JSON.stringify(updatedCases));
-    //     resolve(newCase);
-    //   }, 600);
-    // });
 
     const headers = getAuthHeader();
 
