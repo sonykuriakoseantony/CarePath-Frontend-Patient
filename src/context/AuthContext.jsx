@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { createSymptomsAPI, getAllCasesAPI } from "../services/allAPI";
 import { getAuthHeader } from "../utils/authHeader";
-import { getAllSymptomsAPI } from "../../../carepath-frontend-admin/src/services/allAPI";
 
 const AuthContext = createContext(null);
 
