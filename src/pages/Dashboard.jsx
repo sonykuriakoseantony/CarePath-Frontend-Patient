@@ -7,13 +7,14 @@ import {
   FiSend,
   FiUserCheck,
 } from "react-icons/fi";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { LuClipboardList } from "react-icons/lu";
 import { BiUpload } from "react-icons/bi";
 import { GrClose } from "react-icons/gr";
 import { IoAlertCircleOutline } from "react-icons/io5";
+import serverURL from "../services/serverURL";
 
 const statusConfig = {
   submitted: {
@@ -28,9 +29,9 @@ const statusConfig = {
     icon: FiSearch,
     description: "Your case has been rejected",
   },
-  auto_suggested: {
+  suggested: {
     label: "Specialist Suggested",
-    class: "status-suggested",
+    class: "status-review",
     icon: FiUserCheck,
     description: "A specialist has been recommended for your case.",
   },
@@ -50,16 +51,15 @@ const severityOptions = [
 ];
 
 function Dashboard() {
-  const { user, isLoading, submitSymptoms, isAuthenticated, cases } =
-    useAuth();
+  const { user, isLoading, submitSymptoms, isAuthenticated, cases } = useAuth();
 
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fileName, setFileName] = useState("");
 
   const [formData, setFormData] = useState({
-    patientName : "",
-    patientEmail : "",
+    patientName: "",
+    patientEmail: "",
     symptoms: "",
     duration: "",
     severity: "",
@@ -67,10 +67,8 @@ function Dashboard() {
     medicalReports: [],
   });
 
-  console.log(formData);
+  // console.log(formData);
   // console.log(cases);
-
-  // const cases = getUserCases();
 
   if (isLoading) {
     return (
@@ -123,8 +121,8 @@ function Dashboard() {
 
     setIsSubmitting(true);
 
-    console.log(user);
-    
+    // console.log(user);
+
     try {
       const formDataObj = new FormData();
 
@@ -138,14 +136,14 @@ function Dashboard() {
 
       // IMPORTANT: append files correctly
       formData.medicalReports.forEach((file) => {
-        console.log(file);
-        
+        // console.log(file);
+
         formDataObj.append("medicalReports", file);
       });
 
       await submitSymptoms(formDataObj);
-      console.log("+++++++++++++FormData+++++++++++++");
-      console.log(formDataObj);
+      // console.log("+++++++++++++FormData+++++++++++++");
+      // console.log(formDataObj);
 
       toast.success(
         "Symptoms submitted successfully! Your case ID has been assigned.",
@@ -228,8 +226,8 @@ function Dashboard() {
                   Active Cases
                 </p>
                 <p className="text-sm text-muted-foreground mb-2">
-                  You have {cases?.length} case{cases?.length != 1 ? "s" : ""} on
-                  record.
+                  You have {cases?.length} case{cases?.length != 1 ? "s" : ""}{" "}
+                  on record.
                 </p>
                 <div className="flex gap-2 flex-wrap">
                   {cases?.length > 0 && (
@@ -292,7 +290,9 @@ function Dashboard() {
                       </div>
                     </div>
 
-                    <div className="grid sm:grid-cols-3 gap-4 text-sm">
+                    <div
+                      className={`grid sm:grid-cols-${caseItem?.medicalReports?.length > 0 ? "4" : "3"} gap-4 text-sm`}
+                    >
                       <div>
                         <span className="text-muted-foreground">
                           Primary Symptoms:
@@ -312,6 +312,25 @@ function Dashboard() {
                         <p className="text-foreground mt-1 capitalize">
                           {caseItem.severity}
                         </p>
+                      </div>
+                      <div>
+                      <div className="flex gap-1.5 flex-wrap">
+                        {caseItem?.medicalReports?.length > 0 ? (
+                          caseItem?.medicalReports?.map((report, index) => (
+                            <div key={index}>
+                              <a className="px-3 py-2 bg-slate-100 border border-slate-300 rounded-md inline-block transition-all duration-300 hover:bg-slate-200"
+                                href={`${serverURL}/uploads/${report}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {`Report ${index+1}`}
+                              </a>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No Reports</p>
+                        )}
+                      </div>
                       </div>
                     </div>
 
